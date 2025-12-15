@@ -212,14 +212,15 @@
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
         }
 
-        .ad-banner {
+        /* PARTNER STRIP */
+        .partner-strip {
             width: 100%;
             max-width: 340px; 
             display: flex;
             justify-content: space-between;
             gap: 8px;
         }
-        .ad-slot {
+        .partner-box {
             background: rgba(228, 230, 235, 0.6);
             color: #666;
             border: 1px dashed #aaa;
@@ -239,24 +240,24 @@
             min-height: 80px; 
         }
         
-        .ad-slot.active-ad {
+        .partner-box.active-p {
             background: rgba(255, 255, 255, 0.9);
             border: 1px solid #4CAF50; 
             color: #2e7d32;
         }
-        .ad-slot.active-ad img {
+        .partner-box.active-p img {
             width: 100%;
             height: auto;
             max-height: 80px; 
             object-fit: contain;
             margin-bottom: 2px;
         }
-        .ad-slot.active-ad span {
+        .partner-box.active-p span {
              font-weight: bold;
              font-size: 0.9em;
              line-height: 1.1;
         }
-        .ad-slot:hover {
+        .partner-box:hover {
             background: rgba(255, 255, 255, 1);
             border-color: #888;
             transform: translateY(-2px);
@@ -406,16 +407,16 @@
 
     <div class="sponsored-text" id="sponsoredTxt">---- Patrocinado ----</div>
 
-    <div class="ad-banner">
-        <a href="https://guidal.org" target="_blank" class="ad-slot active-ad">
+    <div class="partner-strip">
+        <a href="https://guidal.org" target="_blank" class="partner-box active-p">
             <img src="https://mwpicard.github.io/pistaslistas/images/w&d.png" alt="Logo">
             <span>Alella Green Tech</span>
         </a>
-        <a href="https://clubalellasistres.cat/" target="_blank" class="ad-slot active-ad">
+        <a href="https://clubalellasistres.cat/" target="_blank" class="partner-box active-p">
             <img src="https://mwpicard.github.io/pistaslistas/images/sistres_ad.png" alt="Setpoint">
             <span>Setpoint Tennis</span>
         </a>
-        <div class="ad-slot" onclick="openAdModal()">
+        <div class="partner-box" onclick="openAdModal()">
             clica aquí para poner tu publicidad
         </div>
     </div>
@@ -471,11 +472,11 @@
                 total: "Total",
                 sponsored: "---- Patrocinado ----",
                 btn_share: "📋 Copiar para WhatsApp",
-                // STATIC MESSAGE
                 wa_msg: "✅ PISTAS LISTAS?\n⏰ A CUANDO? 🔗 bit.ly/pistaslistas",
                 math_title: "Cálculo de Secado",
                 math_desc: "Estimación basada en evaporación y drenaje para arcilla roja:",
-                how_calc: "Cómo calculamos"
+                how_calc: "Cómo calculamos",
+                alert_ok: "¡Copiado! Pégalo en WhatsApp."
             },
             ca: {
                 title: "Quan estaran llestes les pistes de Tennis?",
@@ -502,7 +503,8 @@
                 wa_msg: "✅ PISTES LLESTES?\n⏰ A QUAN? 🔗 bit.ly/pistaslistas",
                 math_title: "Càlcul d'Assecat",
                 math_desc: "Estimació basada en evaporació i drenatge per a terra batuda:",
-                how_calc: "Com calculem"
+                how_calc: "Com calculem",
+                alert_ok: "Copiat! Enganxa-ho al WhatsApp."
             },
             en: {
                 title: "When will the Tennis Courts be ready?",
@@ -529,7 +531,8 @@
                 wa_msg: "✅ COURTS READY?\n⏰ WHEN? 🔗 bit.ly/pistaslistas",
                 math_title: "Drying Calculation",
                 math_desc: "Estimate based on evaporation and drainage for red clay:",
-                how_calc: "How it works"
+                how_calc: "How it works",
+                alert_ok: "Copied! Paste into WhatsApp."
             }
         };
 
@@ -549,23 +552,19 @@
             document.getElementById('lblRain').innerText = t.rain;
             document.getElementById('lblRainLow').innerText = t.rain_low;
             document.getElementById('lblRainHigh').innerText = t.rain_high;
-            
             document.getElementById('lblSun').innerText = t.sun;
             document.getElementById('lblSunLow').innerText = t.sun_low;
             document.getElementById('lblSunHigh').innerText = t.sun_high;
-
             document.getElementById('lblTemp').innerText = t.temp;
             document.getElementById('lblWind').innerText = t.wind;
             document.getElementById('lblSpeed').innerText = t.speed;
             document.getElementById('lblSec').innerText = t.sec;
             document.getElementById('simBtn').innerText = t.btn_sim;
             document.getElementById('shareBtn').innerText = t.btn_share;
-            
             document.getElementById('lblPuddle').innerText = t.puddles;
             document.getElementById('lblFew').innerText = t.few;
             document.getElementById('lblTotal').innerText = t.total;
             document.getElementById('sponsoredTxt').innerText = t.sponsored;
-            
             document.getElementById('mathTitle').innerText = t.math_title;
             document.getElementById('mathDesc').innerText = t.math_desc;
             document.getElementById('btnInfo').innerText = t.how_calc;
@@ -588,8 +587,16 @@
         function initPuddles() {
             const rainInput = document.getElementById('rain').value; 
             const factor = parseFloat(document.getElementById('puddleFactor').value); 
-            const amount = (parseFloat(rainInput) || 0) * factor;
+            
+            // MATH FIX: Add standing water logic if puddle factor > 0.5 (even if rain is 0)
+            const rainVal = parseFloat(rainInput) || 0;
+            // "Phantom" water for puddles (max 10mm extra if totally flooded)
+            const standingWater = (factor - 0.5) * 10; 
+            // Only add standing water if > 0
+            const amount = (rainVal * factor) + (standingWater > 0 ? standingWater : 0);
+            
             createPuddles(amount, factor);
+            
             document.getElementById('percentDisplay').innerText = "0%";
             document.getElementById('percentDisplay').style.color = "#333";
             document.getElementById('successMsg').classList.remove('show');
@@ -659,9 +666,13 @@
 
             initPuddles();
 
-            let currentWater = rainBase * factor;
+            // MATH FIX: Same logic as initPuddles for simulation
+            const standingWater = (factor - 0.5) * 10; 
+            let currentWater = (rainBase * factor) + (standingWater > 0 ? standingWater : 0);
             let maxWater = Math.max(currentWater, 1); 
-            let evapRate = (0.2 * (temp / 10) * (1 + (wind / 20))) * sunFactor;
+            
+            let evapRate = (0.25 * (temp / 10) * (1 + (wind / 20))) * sunFactor;
+            
             let hoursPassed = 0;
             const startTime = new Date();
             
@@ -715,29 +726,46 @@
             const readyTime = formatClock(playTime);
             document.getElementById('status').innerText = dict[currentLang].ready_status + readyTime;
             
-            // Show share button
             document.getElementById('shareBtn').style.display = 'block';
         }
 
         function copyToWhatsapp() {
-            const t = dict[currentLang];
-            navigator.clipboard.writeText(t.wa_msg).then(() => {
-                const alertMsg = {
-                    es: "¡Copiado! Pégalo en WhatsApp.",
-                    ca: "Copiat! Enganxa-ho al WhatsApp.",
-                    en: "Copied! Paste into WhatsApp."
-                };
-                alert(alertMsg[currentLang]);
-            }).catch(err => {
-                // Fallback for non-secure contexts or failures
-                console.error("Copy failed", err);
-                const failMsg = {
-                    es: "No se pudo copiar. Inténtalo de nuevo.",
-                    ca: "No s'ha pogut copiar. Torna-ho a provar.",
-                    en: "Could not copy. Try again."
-                };
-                alert(failMsg[currentLang]);
-            });
+            const text = dict[currentLang].wa_msg;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(dict[currentLang].alert_ok);
+                }).catch((err) => {
+                    console.error("Clipboard API failed", err);
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            
+            // Ensure textarea is not visible but part of DOM
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if(successful) alert(dict[currentLang].alert_ok);
+                else alert("Error: No se pudo copiar.");
+            } catch (err) {
+                console.error("Fallback copy failed", err);
+                alert("Error: Tu navegador no permite copiar.");
+            }
+            document.body.removeChild(textArea);
         }
 
         function rainTennisBalls() {
