@@ -153,7 +153,7 @@
             opacity: 1;
         }
 
-        /* Main Controls Box */
+        /* Controls Box */
         .controls {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
@@ -168,7 +168,7 @@
         label { display: block; font-weight: bold; font-size: 0.9em; margin-bottom: 5px; }
         input[type="number"], input[type="range"] { width: 100%; box-sizing: border-box; }
         
-        /* New Range Labels */
+        /* Range Labels */
         .range-labels {
             display: flex;
             justify-content: space-between;
@@ -177,14 +177,14 @@
             margin-top: -3px;
         }
 
-        /* Start Button (Now outside box) */
+        /* Start Button */
         .start-btn {
             background-color: #25D366;
             color: white;
             border: none;
             padding: 14px;
             width: 100%;
-            max-width: 360px; /* Slightly wider than controls */
+            max-width: 360px;
             border-radius: 12px;
             font-size: 18px;
             font-weight: bold;
@@ -372,18 +372,35 @@
         </div>
 
         <div class="input-group">
-            <label id="lblRain">Lluvia (mm)</label>
-            <input type="number" id="rain" value="5" min="0" step="0.5" oninput="initPuddles()">
+            <label id="lblRain">Llueve</label>
+            <input type="range" id="rain" min="0" max="30" step="1" value="5" oninput="initPuddles()">
+            <div class="range-labels">
+                <span id="lblRainLow">Poco</span>
+                <span id="lblRainHigh">Muchísimo</span>
+            </div>
         </div>
+
+        <div class="input-group">
+            <label id="lblSun">Sol</label>
+            <input type="range" id="sun" min="0.8" max="2.5" step="0.1" value="1.5" oninput="updateUI()">
+            <div class="range-labels">
+                <span id="lblSunLow">Nada</span>
+                <span id="lblSunHigh">Lleno sol</span>
+            </div>
+        </div>
+
         <div class="input-group">
             <label><span id="lblTemp">Temperatura</span>: <span id="tempVal">20</span>°C</label>
             <input type="range" id="temp" min="5" max="40" value="20" oninput="updateUI()">
         </div>
+        
         <div class="input-group">
             <label><span id="lblWind">Viento</span>: <span id="windVal">10</span> km/h</label>
             <input type="range" id="wind" min="0" max="50" value="10" oninput="updateUI()">
         </div>
+        
         <hr style="border-top:1px solid #eee;">
+        
         <div class="input-group">
             <label><span id="lblSpeed">Velocidad</span>: 1h = <span id="speedVal">1</span> <span id="lblSec">s</span></label>
             <input type="range" id="speed" min="0.5" max="10" step="0.5" value="1" oninput="updateUI()">
@@ -424,12 +441,13 @@
             <h3 id="mathTitle">Cálculo de Secado</h3>
             <p id="mathDesc">Estimación basada en evaporación y drenaje para arcilla roja:</p>
             <div class="math-box">
-                R = 0.3 * (T/10) * (1 + W/20)
+                R = 0.3 * (T/10) * (1 + W/20) * S
             </div>
             <p style="font-size:0.9em; text-align:left; color:#555;">
                 <b>R:</b> Rate (mm/h)<br>
                 <b>T:</b> Temp (°C)<br>
-                <b>W:</b> Wind (km/h)
+                <b>W:</b> Wind (km/h)<br>
+                <b>S:</b> Sol (Factor)
             </p>
         </div>
     </div>
@@ -441,8 +459,14 @@
                 success: "¡PISTAS LISTAS!",
                 ready_status: "Listas a las: ",
                 not_ready: "No están Listas... ",
+                now_suffix: " (Ahora)",
                 btn_sim: "¿Cuándo Estarán Listas?",
-                rain: "Lluvia (mm)",
+                rain: "Llueve",
+                rain_low: "Poco",
+                rain_high: "Muchísimo!",
+                sun: "Sol",
+                sun_low: "Nada",
+                sun_high: "Lleno sol",
                 temp: "Temperatura",
                 wind: "Viento",
                 speed: "Velocidad",
@@ -453,7 +477,7 @@
                 sponsored: "---- Patrocinado ----",
                 btn_share: "📋 Copiar para WhatsApp",
                 wa_msg: `🎾 *Estado Pistas Tennis*
-🌧️ Lluvia: {rain}mm
+🌧️ {rain_txt}
 🌡️ Temp: {temp}°C
 
 ✅ *¡PISTAS LISTAS!*
@@ -467,8 +491,14 @@
                 success: "PISTES LLESTES!",
                 ready_status: "Llestes a les: ",
                 not_ready: "No estan Llestes... ",
+                now_suffix: " (Ara)",
                 btn_sim: "Quan estaran llestes?",
-                rain: "Pluja (mm)",
+                rain: "Plou",
+                rain_low: "Poc",
+                rain_high: "Moltíssim!",
+                sun: "Sol",
+                sun_low: "Gens",
+                sun_high: "Ple",
                 temp: "Temperatura",
                 wind: "Vent",
                 speed: "Velocitat",
@@ -479,7 +509,7 @@
                 sponsored: "---- Patrocinat ----",
                 btn_share: "📋 Copiar per WhatsApp",
                 wa_msg: `🎾 *Estat Pistes Tennis*
-🌧️ Pluja: {rain}mm
+🌧️ {rain_txt}
 🌡️ Temp: {temp}°C
 
 ✅ *PISTES LLESTES!*
@@ -493,8 +523,14 @@
                 success: "COURTS READY!",
                 ready_status: "Ready at: ",
                 not_ready: "Not Ready Yet... ",
+                now_suffix: " (Now)",
                 btn_sim: "When will they be ready?",
-                rain: "Rainfall (mm)",
+                rain: "Raining",
+                rain_low: "Little",
+                rain_high: "A lot!",
+                sun: "Sun",
+                sun_low: "None",
+                sun_high: "Full sun",
                 temp: "Temperature",
                 wind: "Wind",
                 speed: "Sim Speed",
@@ -505,7 +541,7 @@
                 sponsored: "---- Sponsored ----",
                 btn_share: "📋 Copy for WhatsApp",
                 wa_msg: `🎾 *Tennis Court Status*
-🌧️ Rain: {rain}mm
+🌧️ {rain_txt}
 🌡️ Temp: {temp}°C
 
 ✅ *COURTS READY!*
@@ -530,6 +566,13 @@
             document.getElementById('titleText').innerText = t.title;
             document.getElementById('successMsg').innerText = t.success;
             document.getElementById('lblRain').innerText = t.rain;
+            document.getElementById('lblRainLow').innerText = t.rain_low;
+            document.getElementById('lblRainHigh').innerText = t.rain_high;
+            
+            document.getElementById('lblSun').innerText = t.sun;
+            document.getElementById('lblSunLow').innerText = t.sun_low;
+            document.getElementById('lblSunHigh').innerText = t.sun_high;
+
             document.getElementById('lblTemp').innerText = t.temp;
             document.getElementById('lblWind').innerText = t.wind;
             document.getElementById('lblSpeed').innerText = t.speed;
@@ -537,7 +580,6 @@
             document.getElementById('simBtn').innerText = t.btn_sim;
             document.getElementById('shareBtn').innerText = t.btn_share;
             
-            // New UI Elements
             document.getElementById('lblPuddle').innerText = t.puddles;
             document.getElementById('lblFew').innerText = t.few;
             document.getElementById('lblTotal').innerText = t.total;
@@ -548,7 +590,7 @@
 
             if(document.getElementById('simBtn').disabled === false && document.getElementById('shareBtn').style.display === 'none') {
                  const now = new Date();
-                 document.getElementById('status').innerText = t.not_ready + formatClock(now);
+                 document.getElementById('status').innerText = t.not_ready + formatClock(now) + t.now_suffix;
             }
         }
 
@@ -563,28 +605,34 @@
         let puddles = []; 
 
         function initPuddles() {
-            const rainInput = document.getElementById('rain').value;
-            // Get Puddle Factor (0.5 to 1.5)
-            const factor = parseFloat(document.getElementById('puddleFactor').value);
+            const rainInput = document.getElementById('rain').value; // 0 to 30
+            const factor = parseFloat(document.getElementById('puddleFactor').value); // 0.5 to 1.5
             
-            // Visual amount uses factor
+            // Visual amount calc
             const amount = (parseFloat(rainInput) || 0) * factor;
             
-            createPuddles(amount);
+            createPuddles(amount, factor);
+            
             document.getElementById('percentDisplay').innerText = "0%";
             document.getElementById('percentDisplay').style.color = "#333";
             document.getElementById('successMsg').classList.remove('show');
             const now = new Date();
-            document.getElementById('status').innerText = dict[currentLang].not_ready + formatClock(now);
+            document.getElementById('status').innerText = dict[currentLang].not_ready + formatClock(now) + dict[currentLang].now_suffix;
         }
 
-        function createPuddles(amount) {
+        function createPuddles(amount, factor) {
             puddles.forEach(p => p.el.remove());
             puddles = [];
             const court = document.getElementById('court');
             if (amount <= 0) return;
-            // More puddles if amount is higher
-            const numPuddles = Math.min(Math.ceil(amount * 2.5), 25); 
+            
+            // INCREASED PUDDLE LIMIT significantly
+            // If factor is max (1.5) and rain is high, we show LOTS of puddles
+            let multiplier = 2.5;
+            if(factor >= 1.4) multiplier = 4.0; // Boost density if slider is at "Total"
+
+            const numPuddles = Math.min(Math.ceil(amount * multiplier), 80); 
+
             for(let i=0; i<numPuddles; i++) {
                 let p = document.createElement('div');
                 p.className = 'puddle';
@@ -619,6 +667,7 @@
             const factor = parseFloat(document.getElementById('puddleFactor').value);
             const temp = parseFloat(document.getElementById('temp').value);
             const wind = parseFloat(document.getElementById('wind').value);
+            const sunFactor = parseFloat(document.getElementById('sun').value); // New Sun Factor
 
             const percentEl = document.getElementById('percentDisplay');
             const statusEl = document.getElementById('status');
@@ -633,14 +682,14 @@
             percentEl.style.color = "#333";
             let celebrated = false;
 
-            // Update Puddles one last time before start
             initPuddles();
 
-            // Calculate ACTUAL water using the factor
             let currentWater = rainBase * factor;
             let maxWater = Math.max(currentWater, 1); 
 
-            let evapRate = (0.2 * (temp / 10) * (1 + (wind / 20))) * 1.5;
+            // Updated Formula with SUN factor
+            let evapRate = (0.2 * (temp / 10) * (1 + (wind / 20))) * sunFactor;
+            
             let hoursPassed = 0;
             const startTime = new Date();
             
@@ -697,8 +746,15 @@
             document.getElementById('status').innerText = dict[currentLang].ready_status + readyTime;
             
             const t = dict[currentLang];
+            
+            // Dynamic text for rain description
+            const rVal = document.getElementById('rain').value;
+            let rainText = rVal + " (Slider)";
+            if(rVal < 10) rainText = t.rain_low;
+            else rainText = t.rain_high;
+
             let msg = t.wa_msg
-                .replace('{rain}', document.getElementById('rain').value)
+                .replace('{rain_txt}', rainText)
                 .replace('{temp}', document.getElementById('temp').value)
                 .replace('{time}', readyTime)
                 .replace('{link}', window.location.href);
