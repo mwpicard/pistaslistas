@@ -189,6 +189,7 @@
 
         .share-btn {
             background-color: #34B7F1;
+            display: none; /* Hidden until finished */
             margin-top: 15px;
             width: 100%;
             padding: 12px;
@@ -262,7 +263,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* MODALS */
         .modal {
             display: none; 
             position: fixed; 
@@ -357,7 +357,6 @@
     <button onclick="startSimulation()" class="start-btn" id="simBtn">¿Cuándo Estarán Listas?</button>
 
     <div class="controls">
-        
         <div class="input-group">
             <label id="lblPuddle">Charcos ahora:</label>
             <input type="range" id="puddleFactor" min="0.5" max="1.5" step="0.1" value="1.0" oninput="initPuddles()">
@@ -471,11 +470,8 @@
                 few: "Pocos",
                 total: "Total",
                 sponsored: "---- Patrocinado ----",
-                btn_share: "WhatsApp (Enviar Previsión)",
-                wa_msg: `🎾 *¿Cuándo podremos jugar?*
-He actualizado las condiciones de las pistas.
-👇 Mira la previsión aquí:
-{link}`,
+                btn_share: "📋 Copiar para WhatsApp",
+                wa_msg: "✅ PISTAS LISTAS?\n⏰ A CUANDO? 🔗 bit.ly/pistaslistas",
                 math_title: "Cálculo de Secado",
                 math_desc: "Estimación basada en evaporación y drenaje para arcilla roja:",
                 how_calc: "Cómo calculamos"
@@ -501,11 +497,8 @@ He actualizado las condiciones de las pistas.
                 few: "Pocs",
                 total: "Total",
                 sponsored: "---- Patrocinat ----",
-                btn_share: "WhatsApp (Enviar Previsió)",
-                wa_msg: `🎾 *Quan podrem jugar?*
-He actualitzat les condicions de les pistes.
-👇 Mira la previsió aquí:
-{link}`,
+                btn_share: "📋 Copiar per WhatsApp",
+                wa_msg: "✅ PISTES LLESTES?\n⏰ A QUAN? 🔗 bit.ly/pistaslistas",
                 math_title: "Càlcul d'Assecat",
                 math_desc: "Estimació basada en evaporació i drenatge per a terra batuda:",
                 how_calc: "Com calculem"
@@ -531,11 +524,8 @@ He actualitzat les condicions de les pistes.
                 few: "Few",
                 total: "Flooded",
                 sponsored: "---- Sponsored ----",
-                btn_share: "WhatsApp (Send Forecast)",
-                wa_msg: `🎾 *When can we play?*
-I updated the court conditions.
-👇 Check the forecast here:
-{link}`,
+                btn_share: "📋 Copy for WhatsApp",
+                wa_msg: "✅ COURTS READY?\n⏰ WHEN? 🔗 bit.ly/pistaslistas",
                 math_title: "Drying Calculation",
                 math_desc: "Estimate based on evaporation and drainage for red clay:",
                 how_calc: "How it works"
@@ -659,6 +649,7 @@ I updated the court conditions.
             const percentEl = document.getElementById('percentDisplay');
             const statusEl = document.getElementById('status');
             const btn = document.getElementById('simBtn');
+            const shareBtn = document.getElementById('shareBtn');
             const successMsg = document.getElementById('successMsg');
 
             if (simInterval) clearInterval(simInterval);
@@ -725,35 +716,19 @@ I updated the court conditions.
             const playTime = new Date(startTime.getTime() + (hours * 60 * 60 * 1000));
             const readyTime = formatClock(playTime);
             document.getElementById('status').innerText = dict[currentLang].ready_status + readyTime;
+            
+            // Show share button
+            document.getElementById('shareBtn').style.display = 'block';
         }
 
-        // GENERATE SMART URL & COPY
         function copyToWhatsapp() {
-            // 1. Get Params
-            const p = {
-                puddle: document.getElementById('puddleFactor').value,
-                rain: document.getElementById('rain').value,
-                sun: document.getElementById('sun').value,
-                temp: document.getElementById('temp').value,
-                wind: document.getElementById('wind').value,
-                speed: document.getElementById('speed').value,
-                lang: currentLang
-            };
-            
-            // 2. Build URL
-            const queryString = new URLSearchParams(p).toString();
-            const shareUrl = window.location.origin + window.location.pathname + '?' + queryString;
-
-            // 3. Build Text
+            // Simplified Copy - No URL params
             const t = dict[currentLang];
-            const msg = t.wa_msg.replace('{link}', shareUrl);
-
-            // 4. Copy
-            navigator.clipboard.writeText(msg).then(() => {
+            navigator.clipboard.writeText(t.wa_msg).then(() => {
                 const alertMsg = {
-                    es: "¡Enlace copiado! Pégalo en WhatsApp.",
-                    ca: "Enllaç copiat! Enganxa-ho al WhatsApp.",
-                    en: "Link copied! Paste into WhatsApp."
+                    es: "¡Copiado! Pégalo en WhatsApp.",
+                    ca: "Copiat! Enganxa-ho al WhatsApp.",
+                    en: "Copied! Paste into WhatsApp."
                 };
                 alert(alertMsg[currentLang]);
             });
@@ -773,7 +748,6 @@ I updated the court conditions.
             }
         }
 
-        // Modal Functions
         function openAdModal() { document.getElementById("adModal").style.display = "block"; }
         function closeAdModal() { document.getElementById("adModal").style.display = "none"; }
         function openMathModal() { document.getElementById("mathModal").style.display = "block"; }
@@ -784,24 +758,8 @@ I updated the court conditions.
             if (event.target == document.getElementById("mathModal")) closeMathModal();
         }
 
-        // AUTO-LOAD PARAMS
         window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            
-            // Restore Values if Present
-            if(params.has('puddle')) document.getElementById('puddleFactor').value = params.get('puddle');
-            if(params.has('rain')) document.getElementById('rain').value = params.get('rain');
-            if(params.has('sun')) document.getElementById('sun').value = params.get('sun');
-            if(params.has('temp')) document.getElementById('temp').value = params.get('temp');
-            if(params.has('wind')) document.getElementById('wind').value = params.get('wind');
-            if(params.has('speed')) document.getElementById('speed').value = params.get('speed');
-            
-            // Set Language last (triggers UI updates)
-            let lang = params.get('lang') || 'es';
-            setLang(lang);
-            
-            // Update labels manually once just in case
-            updateUI();
+            setLang('es');
             initPuddles();
         };
     </script>
