@@ -7,13 +7,29 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
+            /* Background Image Implementation */
+            background-image: url('https://i.imgur.com/Qx9Y24S.jpeg'); /* */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
             margin: 0;
             color: #333;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Subtle Overlay for Background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(240, 242, 245, 0.85); /* High opacity to make it subtle */
+            z-index: -1;
         }
 
         /* Language Buttons */
@@ -23,13 +39,14 @@
             gap: 10px;
         }
         .lang-btn {
-            background: #e4e6eb;
+            background: rgba(228, 230, 235, 0.8);
             border: none;
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
             font-size: 0.9em;
+            backdrop-filter: blur(5px);
         }
         .lang-btn.active {
             background: #075e54;
@@ -42,6 +59,7 @@
             text-align: center;
             font-size: 1.4em;
             max-width: 350px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
         /* The Court */
@@ -75,16 +93,18 @@
             font-weight: 800;
             margin-top: 15px;
             font-variant-numeric: tabular-nums;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
         
         .status-text {
-            color: #555;
+            color: #444;
             margin-bottom: 20px;
             font-weight: bold;
             font-size: 1.4em;
             min-height: 1.2em;
             text-align: center;
             font-family: "Courier New", Courier, monospace; 
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
         .success-overlay {
@@ -111,12 +131,13 @@
         }
 
         .controls {
-            background: white;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent */
             padding: 20px;
             border-radius: 12px;
             width: 100%;
             max-width: 320px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
         }
         
         .input-group { margin-bottom: 15px; }
@@ -133,16 +154,45 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 5px; /* Reduced top margin since it is first */
-            transition: background 0.2s;
+            margin-top: 5px; 
+            transition: background 0.2s, transform 0.1s;
         }
-        button:hover { background-color: #128C7E; }
-        button:disabled { background-color: #ccc; }
+        button:hover { background-color: #128C7E; transform: translateY(-1px); }
+        button:disabled { background-color: #ccc; transform: none; }
 
         .share-btn {
             background-color: #34B7F1;
             display: none;
             margin-top: 15px;
+        }
+        .share-btn:hover { background-color: #2da0d1; }
+
+        /* Ad Banner Styles */
+        .ad-banner {
+            width: 100%;
+            max-width: 320px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .ad-slot {
+            background: rgba(228, 230, 235, 0.6);
+            color: #666;
+            border: 1px dashed #aaa;
+            border-radius: 8px;
+            padding: 12px 5px;
+            flex: 1;
+            text-align: center;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+        }
+        .ad-slot:hover {
+            background: rgba(208, 210, 214, 0.8);
+            border-color: #888;
+            color: #333;
         }
 
         .falling-ball {
@@ -201,20 +251,26 @@
         <button onclick="copyToWhatsapp()" class="share-btn" id="shareBtn">WhatsApp</button>
     </div>
 
+    <div class="ad-banner">
+        <div class="ad-slot">clica aquí para poner tu publicidad</div>
+        <div class="ad-slot">clica aquí para poner tu publicidad</div>
+        <div class="ad-slot">clica aquí para poner tu publicidad</div>
+    </div>
+
     <script>
-        // Dictionary
+        // Dictionary with updated button text
         const dict = {
             es: {
                 title: "¿Cuándo Estarán Listas Las Pistas de Tennis?",
                 success: "¡PISTAS LISTAS!",
                 ready_status: "Listas a las: ",
-                start_status: "Listo para simular.",
+                // Changed from "Simular Secado"
+                btn_sim: "¿Cuándo Estarán Listas?",
                 rain: "Lluvia (mm)",
                 temp: "Temperatura",
                 wind: "Viento",
                 speed: "Velocidad",
                 sec: "s",
-                btn_sim: "Simular Secado",
                 btn_share: "📋 Copiar para WhatsApp",
                 wa_msg: `🎾 *Estado Pistas Tennis*
 🌧️ Lluvia: {rain}mm
@@ -228,13 +284,13 @@
                 title: "Quan estaran llestes les pistes de Tennis?",
                 success: "PISTES LLESTES!",
                 ready_status: "Llestes a les: ",
-                start_status: "A punt per simular.",
+                // Changed from "Simular Assecat"
+                btn_sim: "Quan estaran llestes?",
                 rain: "Pluja (mm)",
                 temp: "Temperatura",
                 wind: "Vent",
                 speed: "Velocitat",
                 sec: "s",
-                btn_sim: "Simular Assecat",
                 btn_share: "📋 Copiar per WhatsApp",
                 wa_msg: `🎾 *Estat Pistes Tennis*
 🌧️ Pluja: {rain}mm
@@ -248,13 +304,13 @@
                 title: "When will the Tennis Courts be ready?",
                 success: "COURTS READY!",
                 ready_status: "Ready at: ",
-                start_status: "Ready to simulate.",
+                // Changed from "Simulate Drying"
+                btn_sim: "When will they be ready?",
                 rain: "Rainfall (mm)",
                 temp: "Temperature",
                 wind: "Wind",
                 speed: "Sim Speed",
                 sec: "s",
-                btn_sim: "Simulate Drying",
                 btn_share: "📋 Copy for WhatsApp",
                 wa_msg: `🎾 *Tennis Court Status*
 🌧️ Rain: {rain}mm
