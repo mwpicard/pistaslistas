@@ -63,9 +63,10 @@
             color: #555;
             margin-bottom: 20px;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.3em; /* Made slightly larger */
             min-height: 1.2em;
             text-align: center;
+            font-variant-numeric: tabular-nums; /* Prevents jittering numbers */
         }
 
         /* Success Message */
@@ -197,6 +198,7 @@
             document.getElementById('percentDisplay').innerText = "0%";
             document.getElementById('percentDisplay').style.color = "#333";
             document.getElementById('successMsg').classList.remove('show');
+            document.getElementById('status').innerText = "Listo para simular.";
         }
 
         function createPuddles(amount) {
@@ -252,7 +254,6 @@
             successMsg.classList.remove('show');
             btn.disabled = true;
             percentEl.style.color = "#333";
-            statusEl.innerText = "Secando...";
             let celebrated = false;
 
             initPuddles();
@@ -264,22 +265,32 @@
             let maxWater = Math.max(rain, 1); 
             let hoursPassed = 0;
             
+            // Track start time for the running clock
+            const startTime = new Date();
+
             // Ticker setup (0.05s = 50ms)
             const tickRate = 0.05; 
 
             simInterval = setInterval(() => {
-                // READ SPEED LIVE inside the loop
                 const currentSpeedVal = parseFloat(document.getElementById('speed').value);
-                
-                // Calculate how many hours pass in this 0.05s tick
                 const hoursPerTick = tickRate / currentSpeedVal;
 
                 currentWater -= (evapRate * hoursPerTick);
                 hoursPassed += hoursPerTick;
 
+                // --- CLOCK UPDATE START ---
+                // Calculate current simulated time
+                const simulatedDate = new Date(startTime.getTime() + (hoursPassed * 60 * 60 * 1000));
+                const hStr = simulatedDate.getHours().toString().padStart(2, '0');
+                const mStr = simulatedDate.getMinutes().toString().padStart(2, '0');
+                
+                // Show running time
+                statusEl.innerText = `Listas a las: ${hStr}:${mStr}`;
+                // --- CLOCK UPDATE END ---
+
                 if (currentWater < 0) currentWater = 0;
 
-                // Update UI
+                // Update %
                 let percent = 0;
                 if (maxWater > 0) percent = 100 - ((currentWater / maxWater) * 100);
                 else percent = 100;
@@ -297,7 +308,7 @@
 
                 if (currentWater <= 0) {
                     clearInterval(simInterval);
-                    finish(hoursPassed);
+                    finish(hoursPassed); // Pass final hours to ensure exact match
                 }
 
             }, tickRate * 1000);
@@ -311,6 +322,7 @@
             
             document.getElementById('successMsg').classList.add('show');
             
+            // Recalculate final time one last time to be precise
             const now = new Date();
             const playTime = new Date(now.getTime() + (hours * 60 * 60 * 1000));
             
@@ -318,7 +330,8 @@
             const minsStr = playTime.getMinutes().toString().padStart(2, '0');
             const readyTime = `${hoursStr}:${minsStr}`;
             
-            document.getElementById('status').innerText = `¡Seco! Se puede jugar a las: ${readyTime}`;
+            // Freeze the text
+            document.getElementById('status').innerText = `Listas a las: ${readyTime}`;
             
             lastResult = `🎾 *Pistas Sistres*\n🌧️ Lluvia: ${document.getElementById('rain').value}mm\n🌡️ Temp: ${document.getElementById('temp').value}°C\n\n✅ *¡CAMPO LISTO!*\n⏰ Hora estimada: ${readyTime}\n\n¡Vamos a jugar!`;
             
