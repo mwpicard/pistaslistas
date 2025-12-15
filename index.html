@@ -8,7 +8,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             
-            /* UPDATED: Uses the absolute link to force the image to load */
+            /* Background Image (Absolute link for safety) */
             background-image: url('https://mwpicard.github.io/pistaslistas/images/sistres_court.jpg'); 
             
             background-size: cover;
@@ -25,12 +25,12 @@
             position: relative;
         }
 
-        /* Subtle Overlay for Background */
+        /* Subtle Overlay */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(240, 242, 245, 0.85); /* High opacity to make it subtle */
+            background: rgba(240, 242, 245, 0.85); 
             z-index: -1;
         }
 
@@ -69,7 +69,7 @@
             position: relative;
             width: 300px;
             height: 160px;
-            background-color: #b35940; /* Arcilla Roja */
+            background-color: #b35940; 
             border: 4px solid #fff;
             margin-top: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -187,14 +187,33 @@
             flex: 1;
             text-align: center;
             font-size: 0.75em;
-            cursor: pointer;
             transition: all 0.2s;
             backdrop-filter: blur(5px);
+            
+            /* Flex layout for content */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none; /* Remove underline from links */
+        }
+        
+        /* Specific Style for the Active Ad */
+        .ad-slot.active-ad {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #4CAF50; /* Green border */
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .ad-slot.active-ad img {
+            max-height: 24px;
+            margin-bottom: 4px;
         }
         .ad-slot:hover {
-            background: rgba(208, 210, 214, 0.8);
+            background: rgba(255, 255, 255, 1);
             border-color: #888;
-            color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .falling-ball {
@@ -230,296 +249,4 @@
     <div class="status-text" id="status">...</div>
 
     <div class="controls">
-        <button onclick="startSimulation()" id="simBtn" style="margin-bottom: 20px;">¿Cuándo Estarán Listas?</button>
-
-        <div class="input-group">
-            <label id="lblRain">Lluvia (mm)</label>
-            <input type="number" id="rain" value="5" min="0" step="0.5" oninput="initPuddles()">
-        </div>
-        <div class="input-group">
-            <label><span id="lblTemp">Temperatura</span>: <span id="tempVal">20</span>°C</label>
-            <input type="range" id="temp" min="5" max="40" value="20" oninput="updateUI()">
-        </div>
-        <div class="input-group">
-            <label><span id="lblWind">Viento</span>: <span id="windVal">10</span> km/h</label>
-            <input type="range" id="wind" min="0" max="50" value="10" oninput="updateUI()">
-        </div>
-        <hr style="border-top:1px solid #eee;">
-        <div class="input-group">
-            <label><span id="lblSpeed">Velocidad</span>: 1h = <span id="speedVal">1</span> <span id="lblSec">s</span></label>
-            <input type="range" id="speed" min="0.5" max="10" step="0.5" value="1" oninput="updateUI()">
-        </div>
-        
-        <button onclick="copyToWhatsapp()" class="share-btn" id="shareBtn">WhatsApp</button>
-    </div>
-
-    <div class="ad-banner">
-        <div class="ad-slot">clica aquí para poner tu publicidad</div>
-        <div class="ad-slot">clica aquí para poner tu publicidad</div>
-        <div class="ad-slot">clica aquí para poner tu publicidad</div>
-    </div>
-
-    <script>
-        const dict = {
-            es: {
-                title: "¿Cuándo Estarán Listas Las Pistas de Tennis?",
-                success: "¡PISTAS LISTAS!",
-                ready_status: "Listas a las: ",
-                btn_sim: "¿Cuándo Estarán Listas?",
-                rain: "Lluvia (mm)",
-                temp: "Temperatura",
-                wind: "Viento",
-                speed: "Velocidad",
-                sec: "s",
-                btn_share: "📋 Copiar para WhatsApp",
-                wa_msg: `🎾 *Estado Pistas Tennis*
-🌧️ Lluvia: {rain}mm
-🌡️ Temp: {temp}°C
-
-✅ *¡PISTAS LISTAS!*
-⏰ Hora estimada: {time}
-🔗 {link}`
-            },
-            ca: {
-                title: "Quan estaran llestes les pistes de Tennis?",
-                success: "PISTES LLESTES!",
-                ready_status: "Llestes a les: ",
-                btn_sim: "Quan estaran llestes?",
-                rain: "Pluja (mm)",
-                temp: "Temperatura",
-                wind: "Vent",
-                speed: "Velocitat",
-                sec: "s",
-                btn_share: "📋 Copiar per WhatsApp",
-                wa_msg: `🎾 *Estat Pistes Tennis*
-🌧️ Pluja: {rain}mm
-🌡️ Temp: {temp}°C
-
-✅ *PISTES LLESTES!*
-⏰ Hora estimada: {time}
-🔗 {link}`
-            },
-            en: {
-                title: "When will the Tennis Courts be ready?",
-                success: "COURTS READY!",
-                ready_status: "Ready at: ",
-                btn_sim: "When will they be ready?",
-                rain: "Rainfall (mm)",
-                temp: "Temperature",
-                wind: "Wind",
-                speed: "Sim Speed",
-                sec: "s",
-                btn_share: "📋 Copy for WhatsApp",
-                wa_msg: `🎾 *Tennis Court Status*
-🌧️ Rain: {rain}mm
-🌡️ Temp: {temp}°C
-
-✅ *COURTS READY!*
-⏰ Est. Time: {time}
-🔗 {link}`
-            }
-        };
-
-        let currentLang = 'es';
-
-        function setLang(lang) {
-            currentLang = lang;
-            ['es', 'ca', 'en'].forEach(l => {
-                const el = document.getElementById('btn' + l.toUpperCase());
-                if (l === lang) el.classList.add('active');
-                else el.classList.remove('active');
-            });
-
-            const t = dict[lang];
-            document.getElementById('titleText').innerText = t.title;
-            document.getElementById('successMsg').innerText = t.success;
-            document.getElementById('lblRain').innerText = t.rain;
-            document.getElementById('lblTemp').innerText = t.temp;
-            document.getElementById('lblWind').innerText = t.wind;
-            document.getElementById('lblSpeed').innerText = t.speed;
-            document.getElementById('lblSec').innerText = t.sec;
-            document.getElementById('simBtn').innerText = t.btn_sim;
-            document.getElementById('shareBtn').innerText = t.btn_share;
-
-            if(document.getElementById('simBtn').disabled === false && document.getElementById('shareBtn').style.display === 'none') {
-                 const now = new Date();
-                 document.getElementById('status').innerText = t.ready_status + formatClock(now);
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('tempVal').innerText = document.getElementById('temp').value;
-            document.getElementById('windVal').innerText = document.getElementById('wind').value;
-            document.getElementById('speedVal').innerText = document.getElementById('speed').value;
-        }
-
-        let simInterval;
-        let lastResult = "";
-        let puddles = []; 
-
-        function initPuddles() {
-            const rainInput = document.getElementById('rain').value;
-            const amount = parseFloat(rainInput) || 0;
-            createPuddles(amount);
-            document.getElementById('percentDisplay').innerText = "0%";
-            document.getElementById('percentDisplay').style.color = "#333";
-            document.getElementById('successMsg').classList.remove('show');
-            const now = new Date();
-            document.getElementById('status').innerText = dict[currentLang].ready_status + formatClock(now);
-        }
-
-        function createPuddles(amount) {
-            puddles.forEach(p => p.el.remove());
-            puddles = [];
-            const court = document.getElementById('court');
-            if (amount <= 0) return;
-            const numPuddles = Math.min(Math.ceil(amount * 2.5), 20); 
-            for(let i=0; i<numPuddles; i++) {
-                let p = document.createElement('div');
-                p.className = 'puddle';
-                let baseSize = Math.min(amount * 8, 50); 
-                let size = (Math.random() * 20) + baseSize; 
-                p.style.width = size + 'px';
-                p.style.height = (size * 0.6) + 'px';
-                p.style.left = (Math.random() * 260) + 'px';
-                p.style.top = (Math.random() * 120) + 'px';
-                court.appendChild(p);
-                puddles.push({ el: p, initialSize: size });
-            }
-        }
-
-        function updatePuddles(percentRemaining) {
-            puddles.forEach(p => {
-                let newScale = percentRemaining;
-                if(newScale < 0) newScale = 0;
-                p.el.style.transform = `scale(${newScale})`;
-                p.el.style.opacity = Math.max(0.3, newScale);
-            });
-        }
-
-        function formatClock(dateObj) {
-            const h = dateObj.getHours().toString().padStart(2, '0');
-            const m = dateObj.getMinutes().toString().padStart(2, '0');
-            return `${h}:${m}`;
-        }
-
-        function startSimulation() {
-            const rain = parseFloat(document.getElementById('rain').value) || 0;
-            const temp = parseFloat(document.getElementById('temp').value);
-            const wind = parseFloat(document.getElementById('wind').value);
-
-            const percentEl = document.getElementById('percentDisplay');
-            const statusEl = document.getElementById('status');
-            const btn = document.getElementById('simBtn');
-            const shareBtn = document.getElementById('shareBtn');
-            const successMsg = document.getElementById('successMsg');
-
-            if (simInterval) clearInterval(simInterval);
-            shareBtn.style.display = 'none';
-            successMsg.classList.remove('show');
-            btn.disabled = true;
-            percentEl.style.color = "#333";
-            let celebrated = false;
-
-            initPuddles();
-
-            let evapRate = (0.2 * (temp / 10) * (1 + (wind / 20))) * 1.5;
-            let currentWater = rain;
-            let maxWater = Math.max(rain, 1); 
-            let hoursPassed = 0;
-            const startTime = new Date();
-            
-            statusEl.innerText = dict[currentLang].ready_status + formatClock(startTime);
-
-            const tickRate = 0.05; 
-
-            simInterval = setInterval(() => {
-                const currentSpeedVal = parseFloat(document.getElementById('speed').value);
-                const hoursPerTick = tickRate / currentSpeedVal;
-
-                currentWater -= (evapRate * hoursPerTick);
-                hoursPassed += hoursPerTick;
-
-                const simulatedDate = new Date(startTime.getTime() + (hoursPassed * 60 * 60 * 1000));
-                statusEl.innerText = dict[currentLang].ready_status + formatClock(simulatedDate);
-
-                if (currentWater < 0) currentWater = 0;
-
-                let percent = 0;
-                if (maxWater > 0) percent = 100 - ((currentWater / maxWater) * 100);
-                else percent = 100;
-                if (percent > 100) percent = 100;
-                if (percent < 0) percent = 0;
-
-                percentEl.innerText = Math.floor(percent) + "%";
-                updatePuddles(currentWater / maxWater);
-
-                if (percent >= 95 && !celebrated) {
-                    celebrated = true;
-                    rainTennisBalls();
-                }
-
-                if (currentWater <= 0) {
-                    clearInterval(simInterval);
-                    finish(hoursPassed, startTime);
-                }
-
-            }, tickRate * 1000);
-        }
-
-        function finish(hours, startTime) {
-            document.getElementById('simBtn').disabled = false;
-            const percentEl = document.getElementById('percentDisplay');
-            percentEl.style.color = "#25D366";
-            percentEl.innerText = "100%";
-            
-            document.getElementById('successMsg').innerText = dict[currentLang].success;
-            document.getElementById('successMsg').classList.add('show');
-            
-            const playTime = new Date(startTime.getTime() + (hours * 60 * 60 * 1000));
-            const readyTime = formatClock(playTime);
-            
-            document.getElementById('status').innerText = dict[currentLang].ready_status + readyTime;
-            
-            const t = dict[currentLang];
-            let msg = t.wa_msg
-                .replace('{rain}', document.getElementById('rain').value)
-                .replace('{temp}', document.getElementById('temp').value)
-                .replace('{time}', readyTime)
-                .replace('{link}', window.location.href);
-
-            lastResult = msg;
-            document.getElementById('shareBtn').style.display = 'block';
-        }
-
-        function copyToWhatsapp() {
-            navigator.clipboard.writeText(lastResult);
-            const alertMsg = {
-                es: "¡Copiado! Pégalo en WhatsApp.",
-                ca: "Copiat! Enganxa-ho al WhatsApp.",
-                en: "Copied! Paste into WhatsApp."
-            };
-            alert(alertMsg[currentLang]);
-        }
-
-        function rainTennisBalls() {
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    let b = document.createElement('div');
-                    b.className = 'falling-ball';
-                    b.innerText = '🎾';
-                    b.style.left = Math.random() * 100 + "vw";
-                    b.style.animationDuration = (Math.random() * 2 + 1) + "s";
-                    document.body.appendChild(b);
-                    setTimeout(() => b.remove(), 3000);
-                }, i * 100);
-            }
-        }
-
-        window.onload = function() {
-            setLang('es');
-            initPuddles();
-        };
-    </script>
-</body>
-</html>
+        <button onclick="startSimulation()" id="simBtn"
