@@ -8,8 +8,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             
-            /* UPDATED: Points to the images folder */
-            background-image: url('images/sistres_court.jpg'); 
+            /* UPDATED: Uses the absolute link to force the image to load */
+            background-image: url('https://mwpicard.github.io/pistaslistas/images/sistres_court.jpg'); 
             
             background-size: cover;
             background-position: center;
@@ -290,4 +290,236 @@
                 wind: "Vent",
                 speed: "Velocitat",
                 sec: "s",
-                btn_share: "
+                btn_share: "📋 Copiar per WhatsApp",
+                wa_msg: `🎾 *Estat Pistes Tennis*
+🌧️ Pluja: {rain}mm
+🌡️ Temp: {temp}°C
+
+✅ *PISTES LLESTES!*
+⏰ Hora estimada: {time}
+🔗 {link}`
+            },
+            en: {
+                title: "When will the Tennis Courts be ready?",
+                success: "COURTS READY!",
+                ready_status: "Ready at: ",
+                btn_sim: "When will they be ready?",
+                rain: "Rainfall (mm)",
+                temp: "Temperature",
+                wind: "Wind",
+                speed: "Sim Speed",
+                sec: "s",
+                btn_share: "📋 Copy for WhatsApp",
+                wa_msg: `🎾 *Tennis Court Status*
+🌧️ Rain: {rain}mm
+🌡️ Temp: {temp}°C
+
+✅ *COURTS READY!*
+⏰ Est. Time: {time}
+🔗 {link}`
+            }
+        };
+
+        let currentLang = 'es';
+
+        function setLang(lang) {
+            currentLang = lang;
+            ['es', 'ca', 'en'].forEach(l => {
+                const el = document.getElementById('btn' + l.toUpperCase());
+                if (l === lang) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+
+            const t = dict[lang];
+            document.getElementById('titleText').innerText = t.title;
+            document.getElementById('successMsg').innerText = t.success;
+            document.getElementById('lblRain').innerText = t.rain;
+            document.getElementById('lblTemp').innerText = t.temp;
+            document.getElementById('lblWind').innerText = t.wind;
+            document.getElementById('lblSpeed').innerText = t.speed;
+            document.getElementById('lblSec').innerText = t.sec;
+            document.getElementById('simBtn').innerText = t.btn_sim;
+            document.getElementById('shareBtn').innerText = t.btn_share;
+
+            if(document.getElementById('simBtn').disabled === false && document.getElementById('shareBtn').style.display === 'none') {
+                 const now = new Date();
+                 document.getElementById('status').innerText = t.ready_status + formatClock(now);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('tempVal').innerText = document.getElementById('temp').value;
+            document.getElementById('windVal').innerText = document.getElementById('wind').value;
+            document.getElementById('speedVal').innerText = document.getElementById('speed').value;
+        }
+
+        let simInterval;
+        let lastResult = "";
+        let puddles = []; 
+
+        function initPuddles() {
+            const rainInput = document.getElementById('rain').value;
+            const amount = parseFloat(rainInput) || 0;
+            createPuddles(amount);
+            document.getElementById('percentDisplay').innerText = "0%";
+            document.getElementById('percentDisplay').style.color = "#333";
+            document.getElementById('successMsg').classList.remove('show');
+            const now = new Date();
+            document.getElementById('status').innerText = dict[currentLang].ready_status + formatClock(now);
+        }
+
+        function createPuddles(amount) {
+            puddles.forEach(p => p.el.remove());
+            puddles = [];
+            const court = document.getElementById('court');
+            if (amount <= 0) return;
+            const numPuddles = Math.min(Math.ceil(amount * 2.5), 20); 
+            for(let i=0; i<numPuddles; i++) {
+                let p = document.createElement('div');
+                p.className = 'puddle';
+                let baseSize = Math.min(amount * 8, 50); 
+                let size = (Math.random() * 20) + baseSize; 
+                p.style.width = size + 'px';
+                p.style.height = (size * 0.6) + 'px';
+                p.style.left = (Math.random() * 260) + 'px';
+                p.style.top = (Math.random() * 120) + 'px';
+                court.appendChild(p);
+                puddles.push({ el: p, initialSize: size });
+            }
+        }
+
+        function updatePuddles(percentRemaining) {
+            puddles.forEach(p => {
+                let newScale = percentRemaining;
+                if(newScale < 0) newScale = 0;
+                p.el.style.transform = `scale(${newScale})`;
+                p.el.style.opacity = Math.max(0.3, newScale);
+            });
+        }
+
+        function formatClock(dateObj) {
+            const h = dateObj.getHours().toString().padStart(2, '0');
+            const m = dateObj.getMinutes().toString().padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        function startSimulation() {
+            const rain = parseFloat(document.getElementById('rain').value) || 0;
+            const temp = parseFloat(document.getElementById('temp').value);
+            const wind = parseFloat(document.getElementById('wind').value);
+
+            const percentEl = document.getElementById('percentDisplay');
+            const statusEl = document.getElementById('status');
+            const btn = document.getElementById('simBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const successMsg = document.getElementById('successMsg');
+
+            if (simInterval) clearInterval(simInterval);
+            shareBtn.style.display = 'none';
+            successMsg.classList.remove('show');
+            btn.disabled = true;
+            percentEl.style.color = "#333";
+            let celebrated = false;
+
+            initPuddles();
+
+            let evapRate = (0.2 * (temp / 10) * (1 + (wind / 20))) * 1.5;
+            let currentWater = rain;
+            let maxWater = Math.max(rain, 1); 
+            let hoursPassed = 0;
+            const startTime = new Date();
+            
+            statusEl.innerText = dict[currentLang].ready_status + formatClock(startTime);
+
+            const tickRate = 0.05; 
+
+            simInterval = setInterval(() => {
+                const currentSpeedVal = parseFloat(document.getElementById('speed').value);
+                const hoursPerTick = tickRate / currentSpeedVal;
+
+                currentWater -= (evapRate * hoursPerTick);
+                hoursPassed += hoursPerTick;
+
+                const simulatedDate = new Date(startTime.getTime() + (hoursPassed * 60 * 60 * 1000));
+                statusEl.innerText = dict[currentLang].ready_status + formatClock(simulatedDate);
+
+                if (currentWater < 0) currentWater = 0;
+
+                let percent = 0;
+                if (maxWater > 0) percent = 100 - ((currentWater / maxWater) * 100);
+                else percent = 100;
+                if (percent > 100) percent = 100;
+                if (percent < 0) percent = 0;
+
+                percentEl.innerText = Math.floor(percent) + "%";
+                updatePuddles(currentWater / maxWater);
+
+                if (percent >= 95 && !celebrated) {
+                    celebrated = true;
+                    rainTennisBalls();
+                }
+
+                if (currentWater <= 0) {
+                    clearInterval(simInterval);
+                    finish(hoursPassed, startTime);
+                }
+
+            }, tickRate * 1000);
+        }
+
+        function finish(hours, startTime) {
+            document.getElementById('simBtn').disabled = false;
+            const percentEl = document.getElementById('percentDisplay');
+            percentEl.style.color = "#25D366";
+            percentEl.innerText = "100%";
+            
+            document.getElementById('successMsg').innerText = dict[currentLang].success;
+            document.getElementById('successMsg').classList.add('show');
+            
+            const playTime = new Date(startTime.getTime() + (hours * 60 * 60 * 1000));
+            const readyTime = formatClock(playTime);
+            
+            document.getElementById('status').innerText = dict[currentLang].ready_status + readyTime;
+            
+            const t = dict[currentLang];
+            let msg = t.wa_msg
+                .replace('{rain}', document.getElementById('rain').value)
+                .replace('{temp}', document.getElementById('temp').value)
+                .replace('{time}', readyTime)
+                .replace('{link}', window.location.href);
+
+            lastResult = msg;
+            document.getElementById('shareBtn').style.display = 'block';
+        }
+
+        function copyToWhatsapp() {
+            navigator.clipboard.writeText(lastResult);
+            const alertMsg = {
+                es: "¡Copiado! Pégalo en WhatsApp.",
+                ca: "Copiat! Enganxa-ho al WhatsApp.",
+                en: "Copied! Paste into WhatsApp."
+            };
+            alert(alertMsg[currentLang]);
+        }
+
+        function rainTennisBalls() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    let b = document.createElement('div');
+                    b.className = 'falling-ball';
+                    b.innerText = '🎾';
+                    b.style.left = Math.random() * 100 + "vw";
+                    b.style.animationDuration = (Math.random() * 2 + 1) + "s";
+                    document.body.appendChild(b);
+                    setTimeout(() => b.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        window.onload = function() {
+            setLang('es');
+            initPuddles();
+        };
+    </script>
+</body>
+</html>
