@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado Pistas Tennis</title>
+    <title>Pistas Listas</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -16,43 +16,22 @@
             color: #333;
         }
 
-        /* Language Buttons */
-        .lang-container {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-        }
+        .lang-container { margin-bottom: 15px; display: flex; gap: 10px; }
         .lang-btn {
-            background: #e4e6eb;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9em;
+            background: #e4e6eb; border: none; padding: 8px 15px;
+            border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9em;
         }
-        .lang-btn.active {
-            background: #075e54;
-            color: white;
-        }
+        .lang-btn.active { background: #075e54; color: white; }
 
         h2 { 
-            color: #075e54; 
-            margin-bottom: 5px; 
-            text-align: center;
-            font-size: 1.4em;
-            max-width: 350px;
+            color: #075e54; margin-bottom: 5px; text-align: center;
+            font-size: 1.4em; max-width: 350px;
         }
 
-        /* The Court */
         .court-container {
-            position: relative;
-            width: 300px;
-            height: 160px;
-            background-color: #b35940; /* Arcilla Roja */
-            border: 4px solid #fff;
-            margin-top: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative; width: 300px; height: 160px;
+            background-color: #b35940; border: 4px solid #fff;
+            margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             overflow: hidden;
         }
         
@@ -62,61 +41,37 @@
         .center-line { position: absolute; width: 100%; height: 2px; background: white; top: 50%; left: 0; z-index: 1; }
 
         .puddle {
-            position: absolute;
-            background: rgba(0, 100, 255, 0.7);
-            border-radius: 50%;
-            filter: blur(2px);
-            z-index: 3;
+            position: absolute; background: rgba(0, 100, 255, 0.7);
+            border-radius: 50%; filter: blur(2px); z-index: 3;
             transition: transform 0.2s linear, opacity 0.2s;
         }
 
         .playability-display {
-            font-size: 3em;
-            font-weight: 800;
-            margin-top: 15px;
+            font-size: 3em; font-weight: 800; margin-top: 15px;
             font-variant-numeric: tabular-nums;
         }
         
         .status-text {
-            color: #555;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.4em;
-            min-height: 1.2em;
-            text-align: center;
+            color: #555; margin-bottom: 20px; font-weight: bold;
+            font-size: 1.4em; min-height: 1.2em; text-align: center;
             font-family: "Courier New", Courier, monospace; 
         }
 
         .success-overlay {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: rgba(255,255,255,0.95);
-            padding: 15px 10px;
-            border-radius: 10px;
-            border: 3px solid #25D366;
-            color: #25D366;
-            font-size: 22px;
-            font-weight: 900;
-            z-index: 10;
-            text-align: center;
-            opacity: 0;
+            background: rgba(255,255,255,0.95); padding: 15px 10px;
+            border-radius: 10px; border: 3px solid #25D366;
+            color: #25D366; font-size: 22px; font-weight: 900;
+            z-index: 10; text-align: center; opacity: 0;
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
-            width: 80%;
+            pointer-events: none; width: 80%;
         }
-        .success-overlay.show {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
+        .success-overlay.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 
         .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 320px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: white; padding: 20px; border-radius: 12px;
+            width: 100%; max-width: 320px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .input-group { margin-bottom: 15px; }
@@ -124,32 +79,19 @@
         input[type="number"], input[type="range"] { width: 100%; box-sizing: border-box; }
         
         button {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            padding: 14px;
-            width: 100%;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
+            background-color: #25D366; color: white; border: none;
+            padding: 14px; width: 100%; border-radius: 8px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+            margin-top: 10px; transition: background 0.2s;
         }
         button:hover { background-color: #128C7E; }
         button:disabled { background-color: #ccc; }
 
-        .share-btn {
-            background-color: #34B7F1;
-            display: none;
-        }
+        .share-btn { background-color: #34B7F1; display: none; }
 
         .falling-ball {
-            position: fixed;
-            z-index: 1000;
-            top: -50px;
-            font-size: 24px;
-            animation: fall linear forwards;
+            position: fixed; z-index: 1000; top: -50px;
+            font-size: 24px; animation: fall linear forwards;
             pointer-events: none;
         }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
@@ -195,89 +137,75 @@
             <input type="range" id="speed" min="0.5" max="10" step="0.5" value="1" oninput="updateUI()">
         </div>
         
-        <button onclick="startSimulation()" id="simBtn">Simular Secado</button>
+        <button onclick="startSimulation()" id="simBtn">¡Ver cuándo estarán listas!</button>
         <button onclick="copyToWhatsapp()" class="share-btn" id="shareBtn">WhatsApp</button>
     </div>
 
     <script>
-        // Dictionary using backticks to avoid syntax errors
+        // Data Dictionary
         const dict = {
             es: {
                 title: "¿Cuándo Estarán Listas Las Pistas de Tennis?",
                 success: "¡PISTAS LISTAS!",
+                initial_status: "Muy mojada a las: ",
                 ready_status: "Listas a las: ",
-                start_status: "Listo para simular.",
                 rain: "Lluvia (mm)",
                 temp: "Temperatura",
                 wind: "Viento",
                 speed: "Velocidad",
                 sec: "s",
-                btn_sim: "Simular Secado",
+                btn_sim: "¡Ver cuándo estarán listas!",
                 btn_share: "📋 Copiar para WhatsApp",
-                wa_msg: `🎾 *Estado Pistas Tennis*
-🌧️ Lluvia: {rain}mm
-🌡️ Temp: {temp}°C
-
-✅ *¡PISTAS LISTAS!*
-⏰ Hora estimada: {time}
-🔗 {link}`
+                // Using standard quotes + \n for safety
+                wa_msg: "🎾 *Estado Pistas Tennis*\n🌧️ Lluvia: {rain}mm\n🌡️ Temp: {temp}°C\n\n✅ *¡PISTAS LISTAS!*\n⏰ Hora estimada: {time}\n🔗 {link}"
             },
             ca: {
                 title: "Quan estaran llestes les pistes de Tennis?",
                 success: "PISTES LLESTES!",
+                initial_status: "Molt mullada a les: ",
                 ready_status: "Llestes a les: ",
-                start_status: "A punt per simular.",
                 rain: "Pluja (mm)",
                 temp: "Temperatura",
                 wind: "Vent",
                 speed: "Velocitat",
                 sec: "s",
-                btn_sim: "Simular Assecat",
+                btn_sim: "Veure quan estaran llestes!",
                 btn_share: "📋 Copiar per WhatsApp",
-                wa_msg: `🎾 *Estat Pistes Tennis*
-🌧️ Pluja: {rain}mm
-🌡️ Temp: {temp}°C
-
-✅ *PISTES LLESTES!*
-⏰ Hora estimada: {time}
-🔗 {link}`
+                wa_msg: "🎾 *Estat Pistes Tennis*\n🌧️ Pluja: {rain}mm\n🌡️ Temp: {temp}°C\n\n✅ *PISTES LLESTES!*\n⏰ Hora estimada: {time}\n🔗 {link}"
             },
             en: {
                 title: "When will the Tennis Courts be ready?",
                 success: "COURTS READY!",
+                initial_status: "Very wet at: ",
                 ready_status: "Ready at: ",
-                start_status: "Ready to simulate.",
                 rain: "Rainfall (mm)",
                 temp: "Temperature",
                 wind: "Wind",
                 speed: "Sim Speed",
                 sec: "s",
-                btn_sim: "Simulate Drying",
+                btn_sim: "Check when ready!",
                 btn_share: "📋 Copy for WhatsApp",
-                wa_msg: `🎾 *Tennis Court Status*
-🌧️ Rain: {rain}mm
-🌡️ Temp: {temp}°C
-
-✅ *COURTS READY!*
-⏰ Est. Time: {time}
-🔗 {link}`
+                wa_msg: "🎾 *Tennis Court Status*\n🌧️ Rain: {rain}mm\n🌡️ Temp: {temp}°C\n\n✅ *COURTS READY!*\n⏰ Est. Time: {time}\n🔗 {link}"
             }
         };
 
+        // State Variables
         let currentLang = 'es';
+        let simInterval = null;
+        let lastResult = "";
+        let puddles = [];
+        let isRunning = false;
 
         function setLang(lang) {
             currentLang = lang;
-            
-            // Updates Buttons
-            ['es', 'ca', 'en'].forEach(l => {
-                const el = document.getElementById('btn' + l.toUpperCase());
-                if (l === lang) el.classList.add('active');
-                else el.classList.remove('active');
-            });
-
-            // Update Text
             const t = dict[lang];
+
+            // Update Buttons
+            document.getElementById('btnES').className = (lang === 'es' ? 'lang-btn active' : 'lang-btn');
+            document.getElementById('btnCA').className = (lang === 'ca' ? 'lang-btn active' : 'lang-btn');
+            document.getElementById('btnEN').className = (lang === 'en' ? 'lang-btn active' : 'lang-btn');
+
+            // Update Labels
             document.getElementById('titleText').innerText = t.title;
             document.getElementById('successMsg').innerText = t.success;
             document.getElementById('lblRain').innerText = t.rain;
@@ -288,11 +216,8 @@
             document.getElementById('simBtn').innerText = t.btn_sim;
             document.getElementById('shareBtn').innerText = t.btn_share;
 
-            // Update status text if not running
-            if(document.getElementById('simBtn').disabled === false && document.getElementById('shareBtn').style.display === 'none') {
-                 const now = new Date();
-                 document.getElementById('status').innerText = t.ready_status + formatClock(now);
-            }
+            // Force status text update
+            updateStatusText();
         }
 
         function updateUI() {
@@ -301,60 +226,71 @@
             document.getElementById('speedVal').innerText = document.getElementById('speed').value;
         }
 
-        let simInterval;
-        let lastResult = "";
-        let puddles = []; 
+        function formatClock(dateObj) {
+            const h = dateObj.getHours().toString().padStart(2, '0');
+            const m = dateObj.getMinutes().toString().padStart(2, '0');
+            return h + ":" + m;
+        }
+
+        function updateStatusText(overrideTime) {
+            // Helper to update the text under the % safely
+            const t = dict[currentLang];
+            const now = overrideTime || new Date();
+            const statusEl = document.getElementById('status');
+            
+            if (!isRunning && document.getElementById('shareBtn').style.display === 'none') {
+                // Initial State
+                statusEl.innerText = t.initial_status + formatClock(now);
+            } else if (isRunning) {
+                // Running State
+                statusEl.innerText = t.ready_status + formatClock(now);
+            }
+            // If finished (share btn visible), we don't update automatically
+        }
 
         function initPuddles() {
             const rainInput = document.getElementById('rain').value;
             const amount = parseFloat(rainInput) || 0;
-            createPuddles(amount);
             
-            document.getElementById('percentDisplay').innerText = "0%";
-            document.getElementById('percentDisplay').style.color = "#333";
-            document.getElementById('successMsg').classList.remove('show');
-            
-            // Show current time immediately on reset
-            const now = new Date();
-            document.getElementById('status').innerText = dict[currentLang].ready_status + formatClock(now);
-        }
-
-        function createPuddles(amount) {
-            puddles.forEach(p => p.el.remove());
+            // Cleanup
+            puddles.forEach(function(p){ p.el.remove(); });
             puddles = [];
             
             const court = document.getElementById('court');
-            if (amount <= 0) return;
-
-            const numPuddles = Math.min(Math.ceil(amount * 2.5), 20); 
-
-            for(let i=0; i<numPuddles; i++) {
-                let p = document.createElement('div');
-                p.className = 'puddle';
-                let baseSize = Math.min(amount * 8, 50); 
-                let size = (Math.random() * 20) + baseSize; 
-                p.style.width = size + 'px';
-                p.style.height = (size * 0.6) + 'px';
-                p.style.left = (Math.random() * 260) + 'px';
-                p.style.top = (Math.random() * 120) + 'px';
-                court.appendChild(p);
-                puddles.push({ el: p, initialSize: size });
+            if (amount > 0) {
+                const numPuddles = Math.min(Math.ceil(amount * 2.5), 20); 
+                for(let i=0; i<numPuddles; i++) {
+                    let p = document.createElement('div');
+                    p.className = 'puddle';
+                    let baseSize = Math.min(amount * 8, 50); 
+                    let size = (Math.random() * 20) + baseSize; 
+                    p.style.width = size + 'px';
+                    p.style.height = (size * 0.6) + 'px';
+                    p.style.left = (Math.random() * 260) + 'px';
+                    p.style.top = (Math.random() * 120) + 'px';
+                    court.appendChild(p);
+                    puddles.push({ el: p, initialSize: size });
+                }
             }
+            
+            // Reset UI
+            document.getElementById('percentDisplay').innerText = "0%";
+            document.getElementById('percentDisplay').style.color = "#333";
+            document.getElementById('successMsg').classList.remove('show');
+            document.getElementById('shareBtn').style.display = 'none';
+            document.getElementById('simBtn').disabled = false;
+            
+            isRunning = false;
+            updateStatusText();
         }
 
         function updatePuddles(percentRemaining) {
-            puddles.forEach(p => {
+            puddles.forEach(function(p){
                 let newScale = percentRemaining;
                 if(newScale < 0) newScale = 0;
-                p.el.style.transform = `scale(${newScale})`;
+                p.el.style.transform = "scale(" + newScale + ")";
                 p.el.style.opacity = Math.max(0.3, newScale);
             });
-        }
-
-        function formatClock(dateObj) {
-            const h = dateObj.getHours().toString().padStart(2, '0');
-            const m = dateObj.getMinutes().toString().padStart(2, '0');
-            return `${h}:${m}`;
         }
 
         function startSimulation() {
@@ -363,31 +299,35 @@
             const wind = parseFloat(document.getElementById('wind').value);
 
             const percentEl = document.getElementById('percentDisplay');
-            const statusEl = document.getElementById('status');
             const btn = document.getElementById('simBtn');
-            const shareBtn = document.getElementById('shareBtn');
             const successMsg = document.getElementById('successMsg');
 
             if (simInterval) clearInterval(simInterval);
-            shareBtn.style.display = 'none';
             successMsg.classList.remove('show');
             btn.disabled = true;
             percentEl.style.color = "#333";
+            
             let celebrated = false;
+            isRunning = true; // Flag for status text
 
+            // Re-draw puddles to be safe
             initPuddles();
+            // But set running true again because init resets it
+            isRunning = true; 
+            btn.disabled = true;
 
+            // Physics
             let evapRate = (0.2 * (temp / 10) * (1 + (wind / 20))) * 1.5;
             let currentWater = rain;
             let maxWater = Math.max(rain, 1); 
             let hoursPassed = 0;
             const startTime = new Date();
             
-            statusEl.innerText = dict[currentLang].ready_status + formatClock(startTime);
+            updateStatusText(startTime); // Immediate "Ready at..."
 
             const tickRate = 0.05; 
 
-            simInterval = setInterval(() => {
+            simInterval = setInterval(function() {
                 const currentSpeedVal = parseFloat(document.getElementById('speed').value);
                 const hoursPerTick = tickRate / currentSpeedVal;
 
@@ -396,7 +336,7 @@
 
                 const simulatedDate = new Date(startTime.getTime() + (hoursPassed * 60 * 60 * 1000));
                 
-                statusEl.innerText = dict[currentLang].ready_status + formatClock(simulatedDate);
+                updateStatusText(simulatedDate);
 
                 if (currentWater < 0) currentWater = 0;
 
@@ -423,6 +363,7 @@
         }
 
         function finish(hours, startTime) {
+            isRunning = false;
             document.getElementById('simBtn').disabled = false;
             const percentEl = document.getElementById('percentDisplay');
             percentEl.style.color = "#25D366";
@@ -434,9 +375,11 @@
             const playTime = new Date(startTime.getTime() + (hours * 60 * 60 * 1000));
             const readyTime = formatClock(playTime);
             
-            document.getElementById('status').innerText = dict[currentLang].ready_status + readyTime;
-            
+            // Final static text
             const t = dict[currentLang];
+            document.getElementById('status').innerText = t.ready_status + readyTime;
+            
+            // Prepare WhatsApp Link
             let msg = t.wa_msg
                 .replace('{rain}', document.getElementById('rain').value)
                 .replace('{temp}', document.getElementById('temp').value)
@@ -444,7 +387,6 @@
                 .replace('{link}', window.location.href);
 
             lastResult = msg;
-            
             document.getElementById('shareBtn').style.display = 'block';
         }
 
@@ -460,14 +402,14 @@
 
         function rainTennisBalls() {
             for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
+                setTimeout(function() {
                     let b = document.createElement('div');
                     b.className = 'falling-ball';
                     b.innerText = '🎾';
                     b.style.left = Math.random() * 100 + "vw";
                     b.style.animationDuration = (Math.random() * 2 + 1) + "s";
                     document.body.appendChild(b);
-                    setTimeout(() => b.remove(), 3000);
+                    setTimeout(function(){ b.remove(); }, 3000);
                 }, i * 100);
             }
         }
